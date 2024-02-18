@@ -1,0 +1,107 @@
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
+
+public class Graph
+{
+    private List<int>[] adjacencyList;
+
+    public int NumberOfVertices { get; private set; }
+
+    public Graph(int numberOfVertices)
+    {
+        NumberOfVertices = numberOfVertices;
+        InitializeGraph();
+    }
+
+    private void InitializeGraph()
+    {
+        adjacencyList = new List<int>[NumberOfVertices];
+        for (int i = 0; i < NumberOfVertices; i++)
+        {
+            adjacencyList[i] = new List<int>();
+        }
+    }
+
+    public void AddEdge(int u, int v)
+    {
+        adjacencyList[u].Add(v);
+        adjacencyList[v].Add(u);
+    }
+
+    public string PrintGraph()
+    {
+        string result = "";
+        for (int i = 0; i < NumberOfVertices; i++)
+        {
+            result += $"Vertex {i}: ";
+            foreach (var neighbor in adjacencyList[i])
+            {
+                result += $"{neighbor} ";
+            }
+            result += "\n";
+        }
+        return result;
+    }
+
+    public int GetNumberOfEdges()
+    {
+        int count = 0;
+        for (int i = 0; i < NumberOfVertices; i++)
+        {
+            count += adjacencyList[i].Count;
+        }
+        return count / 2;
+    }
+}
+
+public class GraphForm : Form
+{
+    private Graph fullGraph;
+    private Graph nullGraph;
+    private TextBox outputTextBox;
+
+    public GraphForm()
+    {
+        int numberOfVertices = 5;
+        fullGraph = new Graph(numberOfVertices);
+        nullGraph = new Graph(numberOfVertices);
+
+        for (int i = 0; i < numberOfVertices - 1; i++)
+        {
+            fullGraph.AddEdge(i, i + 1);
+        }
+
+        InitializeUI();
+    }
+
+    private void InitializeUI()
+    {
+        outputTextBox = new TextBox();
+        outputTextBox.Multiline = true;
+        outputTextBox.Dock = DockStyle.Fill;
+        outputTextBox.ReadOnly = true;
+        Controls.Add(outputTextBox);
+
+        DisplayGraphs();
+    }
+
+    private void DisplayGraphs()
+    {
+        AppendText("Full Graph:\n");
+        AppendText(fullGraph.PrintGraph());
+
+        AppendText("\nNull Graph:\n");
+        AppendText(nullGraph.PrintGraph());
+    }
+
+    private void AppendText(string text)
+    {
+        outputTextBox.AppendText(text);
+    }
+
+    static void Main()
+    {
+        Application.Run(new GraphForm());
+    }
+}
